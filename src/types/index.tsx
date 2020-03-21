@@ -5,20 +5,21 @@ type ItemListType = {
 };
 
 export type AppStateType = {
-  data:
-    | {
-        results: Array<ItemListType>;
-      }
-    | undefined;
-  value: string;
+  items: Array<ItemListType>;
+  loading: boolean;
+  ingnoreIds: Array<string>;
+  filter: string;
+  party: { rick: string | null; morty: string | null };
 };
 
 export type ActionType =
-  | { type: "CHANGE_INPUT"; payload: string }
-  | { type: "INITIAL_STATE"; payload: any };
+  | { type: "GET_DATE"; payload: Array<ItemListType> }
+  | { type: "ADD_IGNORED_ID"; payload: { id: string } }
+  | { type: "ADD_PARTY"; payload: { rick: string } | { morty: string } }
+  | { type: "ADD_FILTER"; payload: string };
 
 export type useInputType = {
-  bind: {
+  inputProps: {
     placeholder: string;
     type: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -26,7 +27,6 @@ export type useInputType = {
   };
 };
 
-export type useClickAntPressType = {
-  click: (e: React.MouseEvent<HTMLUListElement, MouseEvent>) => void;
-  press: (e: any) => void;
+export type useClickType = {
+  click: (e: any) => void;
 };

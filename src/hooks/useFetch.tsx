@@ -3,12 +3,9 @@ import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { AppStateType, ActionType } from "types";
 
-const R = gql`
+const setGql = (filter: string) => gql`
   {
-    characters {
-      info {
-        next
-      }
+    characters(filter: { name: "${filter}" }) {
       results {
         name
         id
@@ -21,13 +18,15 @@ const R = gql`
 export function useFetch(
   state: AppStateType,
   dispatch: React.Dispatch<ActionType>
-): void {
-  const initialState = useQuery(R);
-  const { data, loading, error } = initialState;
+): any {
+  const { filter } = state;
+  const { data, loading, error } = useQuery(setGql(filter));
+  console.log(data)
   useEffect(() => {
-    dispatch({
-      type: "INITIAL_STATE",
-      payload: { loading, error, data: data && data.characters }
-    });
-  }, [initialState]);
+    
+    if (data && data.characters.results) {
+      dispatch({ type: "GET_DATE", payload: data.characters.results });
+    }
+    console.log(1);
+  }, [data]);
 }

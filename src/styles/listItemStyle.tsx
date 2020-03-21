@@ -11,13 +11,25 @@ export const listItemStyle = css`
     justify-content: center;
     position: relative;
     cursor: pointer;
-    transition: box-shadow 300ms ease-in-out;
-    &:hover,
-    &:focus {
-      box-shadow: 0 0 4px blueviolet;
+    font-weight: 300;
+
+    &:empty {
+      background-color: #dadada;
+      cursor: initial;
+      &::before {
+        content: attr(data-name);
+        font-size: 24px;
+        font-weight: 300;
+        line-height: 24px;
+        position: absolute;
+        bottom: 14px;
+        color: #fff;
+      }
     }
-    &:active {
-      box-shadow: 0 0 6px blueviolet;
+
+    &.load {
+      align-items: center;
+      width: 100%;
     }
   }
 

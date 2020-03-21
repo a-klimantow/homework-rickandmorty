@@ -2,34 +2,55 @@ import React, { useReducer } from "react";
 import styled from "styled-components";
 import { inputStyle, listStyle, listItemStyle } from "styles";
 import { ReactComponent as Icon } from "assets/close.svg";
-import { useClickAndPress, useInput, useFetch } from "hooks";
+import { useClick, useInput, useFetch } from "hooks";
 import { AppStateType, ActionType } from "types";
 import { data } from "data";
 
 const initialState: AppStateType = {
-  data: undefined,
-  value: ""
+  items: [],
+  ingnoreIds: [],
+  loading: true,
+  party: { rick: null, morty: null },
+  filter: ""
 };
 
 export const App: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { click, press } = useClickAndPress();
-  const { bind } = useInput(state.value, dispatch);
+  const { click } = useClick(dispatch);
+  const { inputProps } = useInput(dispatch);
   useFetch(state, dispatch);
-  console.log(state);
 
+  const { ingnoreIds, party, items, loading } = state;
   return (
     <AppContainer>
-      <input {...bind} />
-      <ul data-loading={false} onClick={click}>
-        {state.data && state.data.results.map(item => (
-          <li key={item.id} tabIndex={0} onKeyPress={press}>
-            <img src={item.image} alt={item.name} />
-            <button type="button">
-              <Icon />
-            </button>
-          </li>
-        ))}
+      <input {...inputProps} />
+
+      {/* loader */}
+
+      {/* card list */}
+      <ul data-loading={loading} onClick={click}>
+        {loading && <li className="load">loading</li>}
+        {items
+          .filter((item: any) => !ingnoreIds.includes(item.id))
+          .map((item: any) => (
+            <li key={item.id}>
+              <img src={item.image} alt={item.name} />
+              <button data-id={item.id} type="button">
+                <Icon />
+              </button>
+            </li>
+          ))}
+      </ul>
+
+      {/* party */}
+      <h3>party</h3>
+      <ul>
+        <li data-name="rick">
+          {party.rick && <img src={party.rick} alt="Rick" />}
+        </li>
+        <li data-name="morty">
+          {party.morty && <img src={party.morty} alt="Morty" />}
+        </li>
       </ul>
     </AppContainer>
   );
@@ -41,6 +62,8 @@ const AppContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  text-transform: uppercase;
+  font-size: 30px;
 
   ${inputStyle}
   ${listStyle}
@@ -49,10 +72,21 @@ const AppContainer = styled.div`
 
 function reducer(state: AppStateType, action: ActionType): AppStateType {
   switch (action.type) {
-    case "CHANGE_INPUT":
-      return { ...state, value: action.payload };
-    case "INITIAL_STATE":
-      return { ...state, ...action.payload };
+    case "GET_DATE":
+      return { ...state, items: action.payload };
+    case "ADD_IGNORED_ID":
+      const { ingnoreIds } = state;
+      const { id } = action.payload;
+      return {
+        ...state,
+        ingnoreIds: !ingnoreIds.includes(id)
+          ? ingnoreIds.concat(id)
+          : ingnoreIds
+      };
+    case "ADD_PARTY":
+      return { ...state, party: { ...state.party, ...action.payload } };
+    case "ADD_FILTER":
+      return { ...state, filter: action.payload };
     default:
       return state;
   }

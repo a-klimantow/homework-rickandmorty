@@ -1,3 +1,3 @@
-export * from "./useClickAndPress";
+export * from "./useClick";
 export * from "./useInput";
 export * from "./useFetch";
